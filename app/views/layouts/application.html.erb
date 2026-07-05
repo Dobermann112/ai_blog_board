@@ -24,6 +24,20 @@
   </head>
 
   <body>
+    <header class="fixed top-0 left-0 right-0 border-b bg-white px-5 py-4 flex items-center gap-4">
+      <%= link_to "Blog Board", root_path, class: "font-bold" %>
+      <%= link_to "記事一覧", posts_path %>
+
+      <% if user_signed_in? %>
+        <%= link_to "新規投稿", new_post_path %>
+        <%= link_to current_user.email, mypage_path %>
+        <%= button_to "ログアウト", destroy_user_session_path, method: :delete %>
+      <% else %>
+        <%= link_to "ログイン", new_user_session_path %>
+        <%= link_to "会員登録", new_user_registration_path %>
+      <% end %>
+    </header>
+
     <main class="container mx-auto mt-28 px-5 flex flex-col gap-4">
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>

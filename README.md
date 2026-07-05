@@ -37,25 +37,29 @@ cp .env.example .env
 # 5. DB作成・マイグレーション（bundle install/ログ・tmpクリアも合わせて実行される）
 bin/setup --skip-server
 
-# 6. テスト実行
+# 6. ダミーデータ投入（任意。ダミーユーザー1件・ダミー記事10件を作成）
+bin/rails db:seed
+
+# 7. テスト実行
 bundle exec rspec
 
-# 7. 静的解析
+# 8. 静的解析
 bundle exec rubocop
 bundle exec brakeman
 bundle exec bundler-audit check --update
 
-# 8. 開発サーバー起動（Rails server + Tailwind watch）
+# 9. 開発サーバー起動（Rails server + Tailwind watch）
 bin/dev
 ```
 
-起動後、`http://localhost:3000` でトップページ（ログイン/会員登録リンク）が表示されます。
+起動後、`http://localhost:3000` でトップページが表示されます。`bin/rails db:seed` を実行していれば、`demo@example.com` / `password` でログインしてダミー記事を確認できます。
 
 ## 主な画面
 
-現時点ではブログ機能自体は未実装（本フェーズは環境構築のみが対象）です。実装済みの画面:
-
-- トップページ（ログイン状態に応じてログイン/会員登録/ログアウトを表示）
+- トップページ（記事一覧へのリンク）
+- 記事一覧（新着順）・記事詳細
+- 記事の新規作成・編集（投稿者のみ）
+- マイページ（自分が投稿した記事一覧、ヘッダーの自分のメールアドレスから遷移）
 - ユーザー登録・ログイン・ログアウト（devise標準画面）
 
-記事投稿・タグ・お気に入り等の画面は、機能実装フェーズで追記します。
+タグ付け・タグ別一覧・お気に入り機能は次フェーズで実装予定です。

@@ -1,11 +1,4 @@
 <div>
   <h1 class="font-bold text-4xl">Blog Board</h1>
-
-  <% if user_signed_in? %>
-    <p>ログイン中: <%= current_user.email %></p>
-    <%= button_to "ログアウト", destroy_user_session_path, method: :delete %>
-  <% else %>
-    <%= link_to "ログイン", new_user_session_path %>
-    <%= link_to "会員登録", new_user_registration_path %>
-  <% end %>
+  <p><%= link_to "記事一覧を見る", posts_path %></p>
 </div>
