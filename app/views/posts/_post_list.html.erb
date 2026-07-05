@@ -1,0 +1,12 @@
+<div class="flex flex-col gap-6">
+  <% posts.each do |post| %>
+    <div class="border-b pb-4">
+      <h2 class="text-xl font-bold">
+        <%= link_to post.title, post_path(post) %>
+      </h2>
+      <p class="text-sm text-gray-500">
+        <%= post.user.email %> ・ <%= l(post.created_at, format: :long) %>
+      </p>
+    </div>
+  <% end %>
+</div>

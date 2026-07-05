@@ -1,0 +1,23 @@
+<%= form_with model: post, class: "flex flex-col gap-4" do |form| %>
+  <% if post.errors.any? %>
+    <div class="text-red-600">
+      <ul>
+        <% post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, "タイトル" %>
+    <%= form.text_field :title, class: "border w-full" %>
+  </div>
+
+  <div>
+    <%= form.label :body, "本文" %>
+    <%= form.text_area :body, rows: 10, class: "border w-full" %>
+  </div>
+
+  <%= form.submit "保存" %>
+<% end %>

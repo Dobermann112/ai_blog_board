@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-4">
+  <h1 class="text-2xl font-bold"><%= @post.title %></h1>
+  <p class="text-sm text-gray-500">
+    <%= @post.user.email %> ・ <%= l(@post.created_at, format: :long) %>
+  </p>
+  <p class="whitespace-pre-wrap"><%= @post.body %></p>
+
+  <% if user_signed_in? && @post.user == current_user %>
+    <div class="flex gap-2">
+      <%= link_to "編集", edit_post_path(@post) %>
+      <%= button_to "削除", post_path(@post), method: :delete, data: { turbo_confirm: "本当に削除しますか？" } %>
+    </div>
+  <% end %>
+
+  <%= link_to "記事一覧に戻る", posts_path %>
+</div>
