@@ -6,12 +6,56 @@
 
 ## 技術構成
 
-環境構築完了後に追記予定です。
+| 領域 | 技術 |
+|---|---|
+| 言語 | Ruby 4.0.1（`.ruby-version` / `.tool-versions`で固定） |
+| フレームワーク | Rails 8.1系（`~> 8.1.2`） |
+| DB | PostgreSQL |
+| 認証 | devise |
+| フロントエンド | Tailwind CSS（tailwindcss-rails）、Turbo/Stimulus/importmap（最小限利用） |
+| テスト | RSpec + Capybara（rack_test）、SimpleCov（カバレッジ閾値70%） |
+| コード品質 | rubocop-rails-omakase、lefthook（pre-commitでrubocop実行）、brakeman、bundler-audit |
+| CI/CD | GitHub Actions（scan_ruby / lint / test）、Dependabot |
+| インフラ | docker-compose（Postgresのみ）、Dockerfile + kamal（本番デプロイ）、Procfile.dev、dotenv-rails |
 
 ## セットアップ手順
 
-環境構築完了後に追記予定です。
+```bash
+# 1. Rubyバージョンを準備（rbenv例。.ruby-version / .tool-versionsに4.0.1を明記済み）
+rbenv install 4.0.1 --skip-existing
+# asdfの場合: asdf install ruby 4.0.1
+
+# 2. 依存関係のインストール
+bundle install
+
+# 3. Postgresコンテナを起動
+docker compose up -d db
+
+# 4. .envを用意（初回のみ）
+cp .env.example .env
+
+# 5. DB作成・マイグレーション（bundle install/ログ・tmpクリアも合わせて実行される）
+bin/setup --skip-server
+
+# 6. テスト実行
+bundle exec rspec
+
+# 7. 静的解析
+bundle exec rubocop
+bundle exec brakeman
+bundle exec bundler-audit check --update
+
+# 8. 開発サーバー起動（Rails server + Tailwind watch）
+bin/dev
+```
+
+起動後、`http://localhost:3000` でトップページ（ログイン/会員登録リンク）が表示されます。
 
 ## 主な画面
 
-環境構築完了後に追記予定です。
+現時点ではブログ機能自体は未実装（本フェーズは環境構築のみが対象）です。実装済みの画面:
+
+- トップページ（ログイン状態に応じてログイン/会員登録/ログアウトを表示）
+- ユーザー登録・ログイン・ログアウト（devise標準画面）
+
+記事投稿・タグ・お気に入り等の画面は、機能実装フェーズで追記します。
