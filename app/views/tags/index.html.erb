@@ -1,17 +1,26 @@
 <h1 class="text-2xl font-bold mb-4 text-sky-800"><%= @page_title %></h1>
 
-<% if user_signed_in? %>
-  <p class="mb-4">
-    <%= link_to "新規タグ作成", new_tag_path,
-          class: "text-sm bg-sky-500 text-white rounded-md px-3 py-1.5 hover:bg-sky-600 transition" %>
-  </p>
-<% end %>
+<% visible_tags, extra_tags = @tags.first(20), @tags.drop(20) %>
 
 <ul class="flex flex-wrap gap-2">
-  <% @tags.each do |tag| %>
+  <% visible_tags.each do |tag| %>
     <li>
       <%= link_to "##{tag.name} (#{tag.posts.size})", tag_path(tag),
             class: "bg-white text-sky-700 border border-sky-200 rounded-full px-3 py-1 text-sm hover:bg-sky-50" %>
     </li>
   <% end %>
 </ul>
+
+<% if extra_tags.any? %>
+  <details class="mt-3">
+    <summary class="cursor-pointer text-sm text-sky-600">もっと見る（+<%= extra_tags.size %>）</summary>
+    <ul class="flex flex-wrap gap-2 mt-2">
+      <% extra_tags.each do |tag| %>
+        <li>
+          <%= link_to "##{tag.name} (#{tag.posts.size})", tag_path(tag),
+                class: "bg-white text-sky-700 border border-sky-200 rounded-full px-3 py-1 text-sm hover:bg-sky-50" %>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+<% end %>

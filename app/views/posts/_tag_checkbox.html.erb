@@ -1,0 +1,4 @@
+<label class="flex items-center gap-1 bg-sky-50 border border-sky-200 rounded-full px-3 py-1 text-sm" data-tag-name="<%= tag.name.downcase %>">
+  <%= check_box_tag "post[tag_ids][]", tag.id, checked, id: "post_tag_ids_#{tag.id}" %>
+  <%= tag.name %>
+</label>

@@ -6,12 +6,15 @@ class PostsController < ApplicationController
 
   def index
     @page_title = "記事一覧"
-    @posts = Post.includes(:tags, :user, :favorites).order(created_at: :desc)
+    scope = Post.includes(:tags, :user, :favorites).order(created_at: :desc)
+    @posts, @total_pages, @current_page = paginate(scope)
   end
 
   def mypage
     @page_title = "マイページ"
-    @posts = current_user.posts.includes(:tags, :user, :favorites).order(created_at: :desc)
+    @page_subtitle = "自分の投稿"
+    scope = current_user.posts.includes(:tags, :user, :favorites).order(created_at: :desc)
+    @posts, @total_pages, @current_page = paginate(scope)
     render :index
   end
 
@@ -71,7 +74,7 @@ class PostsController < ApplicationController
   end
 
   def set_tags
-    @tags = Tag.order(:name)
+    @tags = Tag.visible_to(current_user).order(:name)
   end
 
   def post_params

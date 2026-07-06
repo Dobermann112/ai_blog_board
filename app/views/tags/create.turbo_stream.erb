@@ -1,0 +1,12 @@
+<% if @tag.persisted? %>
+  <%= turbo_stream.append "tag_checkboxes" do %>
+    <%= render "posts/tag_checkbox", tag: @tag, checked: true %>
+  <% end %>
+  <%= turbo_stream.replace "new_tag_form_wrapper" do %>
+    <%= render "posts/new_tag_form", tag: current_user.tags.build %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "new_tag_form_wrapper" do %>
+    <%= render "posts/new_tag_form", tag: @tag %>
+  <% end %>
+<% end %>

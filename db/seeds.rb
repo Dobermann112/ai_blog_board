@@ -87,7 +87,7 @@ created_posts = posts.map do |post_attributes|
     p.body = post_attributes[:body]
   end
 
-  tags = post_attributes[:tags].map { |name| Tag.find_or_create_by!(name: name) }
+  tags = post_attributes[:tags].map { |name| Tag.find_or_create_by!(name: name, user_id: nil) }
   post.tags = tags
   post
 end
