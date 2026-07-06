@@ -1,0 +1,9 @@
+<% if user_signed_in? %>
+  <% if post.favorites.any? { |favorite| favorite.user_id == current_user.id } %>
+    <%= button_to "★ お気に入り解除", post_favorite_path(post), method: :delete,
+          class: "self-start text-sm bg-sky-500 text-white rounded-full px-3 py-1 hover:bg-sky-600 transition" %>
+  <% else %>
+    <%= button_to "☆ お気に入り", post_favorite_path(post), method: :post,
+          class: "self-start text-sm bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1 hover:bg-sky-100 transition" %>
+  <% end %>
+<% end %>

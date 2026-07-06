@@ -1,12 +1,21 @@
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-4">
   <% posts.each do |post| %>
-    <div class="border-b pb-4">
+    <div class="bg-white border border-sky-100 rounded-lg shadow-sm p-4 flex flex-col gap-2">
       <h2 class="text-xl font-bold">
-        <%= link_to post.title, post_path(post) %>
+        <%= link_to post.title, post_path(post), class: "text-sky-800 hover:text-sky-600" %>
       </h2>
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-slate-400">
         <%= post.user.email %> ・ <%= l(post.created_at, format: :long) %>
       </p>
+      <% if post.tags.any? %>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <% post.tags.each do |tag| %>
+            <%= link_to "##{tag.name}", tag_path(tag),
+                  class: "bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-2 py-0.5 hover:bg-sky-100" %>
+          <% end %>
+        </div>
+      <% end %>
+      <%= render "posts/favorite_button", post: post %>
     </div>
   <% end %>
 </div>

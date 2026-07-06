@@ -2,15 +2,16 @@ class PostsController < ApplicationController
   before_action :require_login!, except: [ :index, :show ]
   before_action :set_post, only: [ :show, :edit, :update, :destroy ]
   before_action -> { authorize_owner!(@post) }, only: [ :edit, :update, :destroy ]
+  before_action :set_tags, only: [ :new, :create, :edit, :update ]
 
   def index
     @page_title = "記事一覧"
-    @posts = Post.order(created_at: :desc)
+    @posts = Post.includes(:tags, :user, :favorites).order(created_at: :desc)
   end
 
   def mypage
     @page_title = "マイページ"
-    @posts = current_user.posts.order(created_at: :desc)
+    @posts = current_user.posts.includes(:tags, :user, :favorites).order(created_at: :desc)
     render :index
   end
 
@@ -69,7 +70,11 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
+  def set_tags
+    @tags = Tag.order(:name)
+  end
+
   def post_params
-    params.require(:post).permit(:title, :body)
+    params.require(:post).permit(:title, :body, tag_ids: [])
   end
 end
