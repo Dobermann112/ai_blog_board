@@ -1,0 +1,110 @@
+ja:
+  date:
+    abbr_day_names:
+      - 日
+      - 月
+      - 火
+      - 水
+      - 木
+      - 金
+      - 土
+    abbr_month_names:
+      - ~
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
+    day_names:
+      - 日曜日
+      - 月曜日
+      - 火曜日
+      - 水曜日
+      - 木曜日
+      - 金曜日
+      - 土曜日
+    month_names:
+      - ~
+      - 1月
+      - 2月
+      - 3月
+      - 4月
+      - 5月
+      - 6月
+      - 7月
+      - 8月
+      - 9月
+      - 10月
+      - 11月
+      - 12月
+    order:
+      - :year
+      - :month
+      - :day
+    formats:
+      default: "%Y/%m/%d"
+      long: "%Y年%m月%d日"
+      short: "%m/%d"
+  time:
+    am: "午前"
+    pm: "午後"
+    formats:
+      default: "%Y年%m月%d日(%a) %H時%M分%S秒"
+      long: "%Y年%m月%d日(%a) %H時%M分"
+      short: "%m/%d %H:%M"
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      accepted: "を受諾してください"
+      blank: "を入力してください"
+      confirmation: "と一致しません"
+      empty: "を入力してください"
+      equal_to: "は%{count}にしてください"
+      even: "は偶数にしてください"
+      exclusion: "は予約されています"
+      greater_than: "は%{count}より大きい値にしてください"
+      greater_than_or_equal_to: "は%{count}以上の値にしてください"
+      inclusion: "は一覧にありません"
+      invalid: "は不正な値です"
+      less_than: "は%{count}より小さい値にしてください"
+      less_than_or_equal_to: "は%{count}以下の値にしてください"
+      not_a_number: "は数値で入力してください"
+      not_an_integer: "は整数で入力してください"
+      odd: "は奇数にしてください"
+      other_than: "は%{count}以外の値にしてください"
+      present: "は入力しないでください"
+      required: "を入力してください"
+      taken: "はすでに使用されています"
+      too_long: "は%{count}文字以内で入力してください"
+      too_short: "は%{count}文字以上で入力してください"
+      wrong_length: "は%{count}文字で入力してください"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在するので削除できません"
+          has_many: "%{record}が存在するので削除できません"
+    models:
+      user: "ユーザー"
+      post: "記事"
+      tag: "タグ"
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認用）"
+        current_password: "現在のパスワード"
+        remember_me: "ログイン状態を保存する"
+      post:
+        title: "タイトル"
+        body: "本文"
+      tag:
+        name: "タグ名"

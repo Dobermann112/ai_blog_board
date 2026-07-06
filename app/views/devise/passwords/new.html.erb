@@ -1,0 +1,20 @@
+<h1 class="text-2xl font-bold mb-4 text-sky-800">パスワードをお忘れですか？</h1>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post,
+      class: "bg-white border border-sky-100 rounded-lg shadow-sm p-6 flex flex-col gap-4 max-w-md" }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="flex flex-col gap-1">
+    <%= f.label :email, class: "text-sm font-bold text-sky-700" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email",
+          class: "border border-sky-200 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+  </div>
+
+  <div>
+    <%= f.submit "パスワード再設定メールを送る", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
+  </div>
+<% end %>
+
+<div class="mt-4">
+  <%= render "devise/shared/links" %>
+</div>
