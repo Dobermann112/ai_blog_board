@@ -1,4 +1,8 @@
-<div>
-  <h1 class="font-bold text-4xl">Blog Board</h1>
-  <p><%= link_to "記事一覧を見る", posts_path %></p>
+<div class="bg-white border border-sky-100 rounded-lg shadow-sm p-8 flex flex-col gap-3">
+  <h1 class="font-bold text-4xl text-sky-800">Blog Board</h1>
+  <p class="text-slate-500">ユーザーがブログ記事を投稿・公開できるサービスです。</p>
+  <p>
+    <%= link_to "記事一覧を見る", posts_path,
+          class: "inline-block bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition" %>
+  </p>
 </div>
