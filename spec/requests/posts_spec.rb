@@ -46,6 +46,15 @@ RSpec.describe "Posts", type: :request do
       expect(Post.last.user).to eq(owner)
     end
 
+    it "associates the selected tags with the created post" do
+      tag = Tag.create!(name: "Ruby")
+      sign_in owner
+
+      post posts_path, params: { post: { title: "新規記事", body: "本文", tag_ids: [ tag.id ] } }
+
+      expect(Post.last.tags).to eq([ tag ])
+    end
+
     it "returns unauthorized as json when not logged in" do
       post posts_path, params: { post: { title: "新規記事", body: "本文" } }, as: :json
       expect(response).to have_http_status(:unauthorized)

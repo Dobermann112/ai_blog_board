@@ -1,0 +1,20 @@
+<h1 class="text-2xl font-bold mb-4 text-sky-800">タグの新規作成</h1>
+
+<%= form_with model: @tag, class: "bg-white border border-sky-100 rounded-lg shadow-sm p-6 flex flex-col gap-4" do |form| %>
+  <% if @tag.errors.any? %>
+    <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-3 py-2">
+      <ul>
+        <% @tag.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="flex flex-col gap-1">
+    <%= form.label :name, "タグ名", class: "text-sm font-bold text-sky-700" %>
+    <%= form.text_field :name, class: "border border-sky-200 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+  </div>
+
+  <%= form.submit "作成", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
+<% end %>

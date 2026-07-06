@@ -1,6 +1,6 @@
-<%= form_with model: post, class: "flex flex-col gap-4" do |form| %>
+<%= form_with model: post, class: "bg-white border border-sky-100 rounded-lg shadow-sm p-6 flex flex-col gap-4" do |form| %>
   <% if post.errors.any? %>
-    <div class="text-red-600">
+    <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-3 py-2">
       <ul>
         <% post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -9,15 +9,27 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, "タイトル" %>
-    <%= form.text_field :title, class: "border w-full" %>
+  <div class="flex flex-col gap-1">
+    <%= form.label :title, "タイトル", class: "text-sm font-bold text-sky-700" %>
+    <%= form.text_field :title, class: "border border-sky-200 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-300" %>
   </div>
 
-  <div>
-    <%= form.label :body, "本文" %>
-    <%= form.text_area :body, rows: 10, class: "border w-full" %>
+  <div class="flex flex-col gap-1">
+    <%= form.label :body, "本文", class: "text-sm font-bold text-sky-700" %>
+    <%= form.text_area :body, rows: 10, class: "border border-sky-200 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-300" %>
   </div>
 
-  <%= form.submit "保存" %>
+  <div class="flex flex-col gap-1">
+    <%= form.label :tag_ids, "タグ", class: "text-sm font-bold text-sky-700" %>
+    <div class="flex flex-wrap gap-3">
+      <%= form.collection_check_boxes :tag_ids, @tags, :id, :name do |b| %>
+        <label class="flex items-center gap-1 bg-sky-50 border border-sky-200 rounded-full px-3 py-1 text-sm">
+          <%= b.check_box %>
+          <%= b.text %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form.submit "保存", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
 <% end %>

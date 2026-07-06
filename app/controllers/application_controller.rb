@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  before_action :set_sidebar_tags
+
   class NotAuthenticatedError < StandardError; end
   class NotAuthorizedError < StandardError; end
 
@@ -12,6 +14,10 @@ class ApplicationController < ActionController::Base
   rescue_from NotAuthorizedError, with: :handle_not_authorized
 
   private
+
+  def set_sidebar_tags
+    @sidebar_tags = Tag.order(:name)
+  end
 
   def require_login!
     raise NotAuthenticatedError unless user_signed_in?

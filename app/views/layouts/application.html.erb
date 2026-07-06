@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <title><%= content_for(:title) || "Blog Board" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,25 +23,44 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <header class="fixed top-0 left-0 right-0 border-b bg-white px-5 py-4 flex items-center gap-4">
-      <%= link_to "Blog Board", root_path, class: "font-bold" %>
-      <%= link_to "記事一覧", posts_path %>
+  <body class="bg-sky-50 text-slate-700 min-h-screen">
+    <header class="fixed top-0 left-0 right-0 z-10 border-b border-sky-100 bg-white/90 backdrop-blur px-5 py-4 flex items-center gap-5">
+      <%= link_to "Blog Board", root_path, class: "font-bold text-sky-700 text-lg" %>
+      <%= link_to "記事一覧", posts_path, class: "text-sky-600 hover:text-sky-800" %>
+      <%= link_to "タグ一覧", tags_path, class: "text-sky-600 hover:text-sky-800" %>
 
       <% if user_signed_in? %>
-        <%= link_to "新規投稿", new_post_path %>
-        <%= link_to current_user.email, mypage_path %>
-        <%= button_to "ログアウト", destroy_user_session_path, method: :delete %>
+        <%= link_to "新規投稿", new_post_path, class: "text-sky-600 hover:text-sky-800" %>
+        <%= link_to "お気に入り一覧", favorites_path, class: "text-sky-600 hover:text-sky-800" %>
+        <%= link_to current_user.email, mypage_path, class: "ml-auto text-sky-600 hover:text-sky-800" %>
+        <%= button_to "ログアウト", destroy_user_session_path, method: :delete,
+              class: "text-sm bg-sky-100 text-sky-700 rounded-md px-3 py-1.5 hover:bg-sky-200 transition" %>
       <% else %>
-        <%= link_to "ログイン", new_user_session_path %>
-        <%= link_to "会員登録", new_user_registration_path %>
+        <%= link_to "ログイン", new_user_session_path, class: "ml-auto text-sky-600 hover:text-sky-800" %>
+        <%= link_to "会員登録", new_user_registration_path,
+              class: "text-sm bg-sky-500 text-white rounded-md px-3 py-1.5 hover:bg-sky-600 transition" %>
       <% end %>
     </header>
 
-    <main class="container mx-auto mt-28 px-5 flex flex-col gap-4">
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
-      <%= yield %>
-    </main>
+    <div class="container mx-auto mt-28 px-5 pb-12 flex gap-8">
+      <aside class="w-48 shrink-0 bg-white border border-sky-100 rounded-lg shadow-sm p-4 h-fit">
+        <h2 class="font-bold mb-2 text-sky-700">タグ</h2>
+        <ul class="flex flex-col gap-1 text-sm">
+          <% @sidebar_tags.each do |tag| %>
+            <li><%= link_to "##{tag.name}", tag_path(tag), class: "text-sky-600 hover:text-sky-800 hover:underline" %></li>
+          <% end %>
+        </ul>
+      </aside>
+
+      <main class="flex-1 flex flex-col gap-4">
+        <% if notice %>
+          <p class="bg-sky-50 border border-sky-200 text-sky-800 rounded-md px-3 py-2"><%= notice %></p>
+        <% end %>
+        <% if alert %>
+          <p class="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-3 py-2"><%= alert %></p>
+        <% end %>
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>
