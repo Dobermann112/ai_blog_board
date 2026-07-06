@@ -1,0 +1,15 @@
+<% if total_pages > 1 %>
+  <div class="flex justify-center items-center gap-4 mt-4 text-sm">
+    <% if current_page > 1 %>
+      <%= link_to "← 前へ", "#{request.path}?page=#{current_page - 1}",
+            class: "text-sky-600 hover:text-sky-800" %>
+    <% end %>
+
+    <span class="text-slate-500"><%= current_page %> / <%= total_pages %></span>
+
+    <% if current_page < total_pages %>
+      <%= link_to "次へ →", "#{request.path}?page=#{current_page + 1}",
+            class: "text-sky-600 hover:text-sky-800" %>
+    <% end %>
+  </div>
+<% end %>

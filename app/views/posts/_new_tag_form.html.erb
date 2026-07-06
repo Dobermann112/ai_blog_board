@@ -1,0 +1,13 @@
+<%# tag: エラー表示・入力保持用の未保存Tagインスタンス（通常はTag.new） %>
+<div id="new_tag_form_wrapper" class="border border-sky-100 rounded-md p-3 flex flex-col gap-2">
+  <span class="text-sm font-bold text-sky-700">タグを新規作成</span>
+  <% if tag.errors.any? %>
+    <p class="text-xs text-rose-600"><%= tag.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <%= form_with url: tags_path, method: :post, class: "flex gap-2" do %>
+    <%= text_field_tag "tag[name]", tag.name, placeholder: "新しいタグ名",
+          class: "border border-sky-200 rounded-md px-3 py-1.5 text-sm flex-1" %>
+    <%= submit_tag "追加",
+          class: "text-sm bg-sky-500 text-white rounded-md px-3 py-1.5 hover:bg-sky-600 transition cursor-pointer" %>
+  <% end %>
+</div>

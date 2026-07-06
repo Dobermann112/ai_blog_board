@@ -26,12 +26,8 @@
   <body class="bg-sky-50 text-slate-700 min-h-screen">
     <header class="fixed top-0 left-0 right-0 z-10 border-b border-sky-100 bg-white/90 backdrop-blur px-5 py-4 flex items-center gap-5">
       <%= link_to "Blog Board", root_path, class: "font-bold text-sky-700 text-lg" %>
-      <%= link_to "記事一覧", posts_path, class: "text-sky-600 hover:text-sky-800" %>
-      <%= link_to "タグ一覧", tags_path, class: "text-sky-600 hover:text-sky-800" %>
 
       <% if user_signed_in? %>
-        <%= link_to "新規投稿", new_post_path, class: "text-sky-600 hover:text-sky-800" %>
-        <%= link_to "お気に入り一覧", favorites_path, class: "text-sky-600 hover:text-sky-800" %>
         <%= link_to current_user.email, mypage_path, class: "ml-auto text-sky-600 hover:text-sky-800" %>
         <%= button_to "ログアウト", destroy_user_session_path, method: :delete,
               class: "text-sm bg-sky-100 text-sky-700 rounded-md px-3 py-1.5 hover:bg-sky-200 transition" %>
@@ -44,11 +40,11 @@
 
     <div class="container mx-auto mt-28 px-5 pb-12 flex gap-8">
       <aside class="w-48 shrink-0 bg-white border border-sky-100 rounded-lg shadow-sm p-4 h-fit">
-        <h2 class="font-bold mb-2 text-sky-700">タグ</h2>
+        <h2 class="font-bold mb-2 text-sky-700">MENU</h2>
         <ul class="flex flex-col gap-1 text-sm">
-          <% @sidebar_tags.each do |tag| %>
-            <li><%= link_to "##{tag.name}", tag_path(tag), class: "text-sky-600 hover:text-sky-800 hover:underline" %></li>
-          <% end %>
+          <li><%= link_to "記事一覧", posts_path, class: "text-sky-600 hover:text-sky-800 hover:underline" %></li>
+          <li><%= link_to "タグ一覧", tags_path, class: "text-sky-600 hover:text-sky-800 hover:underline" %></li>
+          <li><%= link_to "お気に入り一覧", favorites_path, class: "text-sky-600 hover:text-sky-800 hover:underline" %></li>
         </ul>
       </aside>
 

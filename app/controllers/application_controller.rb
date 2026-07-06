@@ -5,8 +5,6 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  before_action :set_sidebar_tags
-
   class NotAuthenticatedError < StandardError; end
   class NotAuthorizedError < StandardError; end
 
@@ -15,8 +13,11 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def set_sidebar_tags
-    @sidebar_tags = Tag.order(:name)
+  def paginate(scope, per: 8)
+    total_pages = (scope.count / per.to_f).ceil
+    current_page = [ params[:page].to_i, 1 ].max
+    items = scope.limit(per).offset((current_page - 1) * per)
+    [ items, total_pages, current_page ]
   end
 
   def require_login!

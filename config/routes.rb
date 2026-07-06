@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   end
   get "mypage", to: "posts#mypage", as: :mypage
 
-  resources :tags, only: [ :index, :show, :new, :create ]
+  resources :tags, only: [ :index, :show, :create ]
   resources :favorites, only: [ :index ]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -19,5 +19,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "home#index"
+  root "posts#index"
 end

@@ -5,10 +5,28 @@ RSpec.describe "Posts", type: :request do
   let(:other_user) { User.create!(email: "other@example.com", password: "password") }
   let!(:post_record) { Post.create!(title: "既存記事", body: "本文", user: owner) }
 
+  describe "GET /" do
+    it "returns http success and shows the posts index" do
+      get root_path
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(post_record.title)
+    end
+  end
+
   describe "GET /posts" do
     it "returns http success without login" do
       get posts_path
       expect(response).to have_http_status(:success)
+    end
+
+    it "paginates results 8 per page" do
+      8.times { |i| Post.create!(title: "追加記事#{i}", body: "本文", user: owner) }
+
+      get posts_path
+      expect(response.body).not_to include(post_record.title)
+
+      get posts_path(page: 2)
+      expect(response.body).to include(post_record.title)
     end
   end
 
@@ -145,6 +163,12 @@ RSpec.describe "Posts", type: :request do
 
       expect(response.body).to include(post_record.title)
       expect(response.body).not_to include(other_post.title)
+    end
+
+    it "shows a subtitle for the user's own posts" do
+      sign_in owner
+      get mypage_path
+      expect(response.body).to include("自分の投稿")
     end
   end
 end
