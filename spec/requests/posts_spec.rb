@@ -19,6 +19,18 @@ RSpec.describe "Posts", type: :request do
       expect(response).to have_http_status(:success)
     end
 
+    it "does not display images even when a post has one attached" do
+      post_record.image.attach(
+        io: Rails.root.join("spec/fixtures/files/sample_image.png").open,
+        filename: "sample_image.png",
+        content_type: "image/png"
+      )
+
+      get posts_path
+
+      expect(response.body).not_to include("<img")
+    end
+
     it "paginates results 8 per page" do
       8.times { |i| Post.create!(title: "追加記事#{i}", body: "本文", user: owner) }
 
@@ -34,6 +46,23 @@ RSpec.describe "Posts", type: :request do
     it "returns http success without login" do
       get post_path(post_record)
       expect(response).to have_http_status(:success)
+    end
+
+    it "displays the attached image when present" do
+      post_record.image.attach(
+        io: Rails.root.join("spec/fixtures/files/sample_image.png").open,
+        filename: "sample_image.png",
+        content_type: "image/png"
+      )
+
+      get post_path(post_record)
+
+      expect(response.body).to include("<img")
+    end
+
+    it "does not display an image tag when none is attached" do
+      get post_path(post_record)
+      expect(response.body).not_to include("<img")
     end
   end
 
@@ -71,6 +100,15 @@ RSpec.describe "Posts", type: :request do
       post posts_path, params: { post: { title: "新規記事", body: "本文", tag_ids: [ tag.id ] } }
 
       expect(Post.last.tags).to eq([ tag ])
+    end
+
+    it "attaches the uploaded image" do
+      sign_in owner
+      image = fixture_file_upload("sample_image.png", "image/png")
+
+      post posts_path, params: { post: { title: "新規記事", body: "本文", image: image } }
+
+      expect(Post.last.image).to be_attached
     end
 
     it "returns unauthorized as json when not logged in" do

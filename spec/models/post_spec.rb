@@ -28,4 +28,20 @@ RSpec.describe Post, type: :model do
     expect { user.destroy! }.to change(Post, :count).by(-1)
     expect { post.reload }.to raise_error(ActiveRecord::RecordNotFound)
   end
+
+  it "is valid without an image attached" do
+    post = Post.new(title: "タイトル", body: "本文", user: user)
+    expect(post).to be_valid
+    expect(post.image).not_to be_attached
+  end
+
+  it "can have an image attached" do
+    post = Post.create!(title: "タイトル", body: "本文", user: user)
+    post.image.attach(
+      io: StringIO.new("fake image data"),
+      filename: "sample.png",
+      content_type: "image/png"
+    )
+    expect(post.image).to be_attached
+  end
 end
