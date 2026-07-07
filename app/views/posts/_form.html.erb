@@ -1,7 +1,7 @@
 <div class="bg-white border border-sky-100 rounded-lg shadow-sm p-6 flex flex-col gap-4">
   <%= render "posts/new_tag_form", tag: Tag.new %>
 
-  <%= form_with model: post, class: "flex flex-col gap-4" do |form| %>
+  <%= form_with model: post, multipart: true, class: "flex flex-col gap-4" do |form| %>
     <% if post.errors.any? %>
       <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-3 py-2">
         <ul>
@@ -34,6 +34,17 @@
           <%= render "posts/tag_checkbox", tag: tag, checked: post.tag_ids.include?(tag.id) %>
         <% end %>
       </div>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <%= form.label :image, "画像", class: "text-sm font-bold text-sky-700" %>
+      <% if post.image.attached? %>
+        <div class="flex items-center gap-2">
+          <%= image_tag post.image, class: "max-w-32 max-h-32 rounded-md border border-sky-100" %>
+          <span class="text-xs text-slate-400">現在の画像（新しい画像を選択すると置き換わります）</span>
+        </div>
+      <% end %>
+      <%= form.file_field :image, accept: "image/*", class: "text-sm" %>
     </div>
 
     <%= form.submit "保存", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
