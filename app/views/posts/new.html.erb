@@ -1,3 +1,15 @@
 <h1 class="text-2xl font-bold mb-4 text-sky-800">記事の新規作成</h1>
 
+<% if @drafts.present? %>
+  <div class="bg-white border border-sky-100 rounded-lg shadow-sm p-4 mb-4 flex flex-col gap-2">
+    <span class="text-sm font-bold text-sky-700">下書きを引用</span>
+    <div class="flex flex-wrap gap-2">
+      <% @drafts.each do |draft| %>
+        <%= link_to draft.title.presence || "(無題の下書き・#{l(draft.updated_at, format: :long)})", edit_post_path(draft),
+              class: "text-sm bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1 hover:bg-sky-100" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <%= render "form", post: @post %>

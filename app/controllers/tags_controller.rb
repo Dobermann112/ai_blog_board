@@ -9,7 +9,7 @@ class TagsController < ApplicationController
 
   def show
     @page_title = "##{@tag.name}"
-    scope = @tag.posts.includes(:tags, :user, :favorites).order(created_at: :desc)
+    scope = @tag.posts.published.includes(:tags, :user, :favorites).order(created_at: :desc)
     @posts, @total_pages, @current_page = paginate(scope)
     render "posts/index"
   end

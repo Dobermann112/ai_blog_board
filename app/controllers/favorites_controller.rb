@@ -4,7 +4,7 @@ class FavoritesController < ApplicationController
 
   def index
     @page_title = "お気に入り一覧"
-    scope = current_user.favorite_posts.includes(:tags, :user, :favorites).order("favorites.created_at DESC")
+    scope = current_user.favorite_posts.published.includes(:tags, :user, :favorites).order("favorites.created_at DESC")
     @posts, @total_pages, @current_page = paginate(scope)
     render "posts/index"
   end

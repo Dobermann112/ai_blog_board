@@ -47,6 +47,16 @@
       <%= form.file_field :image, accept: "image/*", class: "text-sm" %>
     </div>
 
-    <%= form.submit "保存", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
+    <div class="flex gap-2">
+      <%= form.submit "保存", class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
+      <% if post.new_record? || post.draft? %>
+        <%= form.submit "下書き保存", name: "draft_submit",
+              class: "self-start bg-sky-50 text-sky-700 border border-sky-200 rounded-md px-4 py-2 hover:bg-sky-100 transition cursor-pointer" %>
+      <% end %>
+      <% unless post.new_record? %>
+        <%= link_to "削除", post_path(post), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
+              class: "self-start bg-rose-50 text-rose-600 border border-rose-200 rounded-md px-4 py-2 hover:bg-rose-100 transition" %>
+      <% end %>
+    </div>
   <% end %>
 </div>

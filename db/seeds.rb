@@ -140,3 +140,8 @@ end
 created_posts.first(3).each do |post|
   fan_user.favorites.find_or_create_by!(post: post)
 end
+
+# 下書き機能の動作確認用に、タイトルのみ入力済みの下書きを1件用意する
+demo_user.posts.find_or_create_by!(title: "書きかけの新企画メモ") do |p|
+  p.draft = true
+end

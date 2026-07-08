@@ -30,6 +30,15 @@ RSpec.describe "Tags", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include(post_record.title)
     end
+
+    it "does not include draft posts tagged with it" do
+      draft = Post.create!(title: "下書き記事", body: nil, user: user, draft: true)
+      draft.tags << shared_tag
+
+      get tag_path(shared_tag)
+
+      expect(response.body).not_to include(draft.title)
+    end
   end
 
   describe "POST /tags" do

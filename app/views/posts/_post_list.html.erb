@@ -2,8 +2,13 @@
   <% posts.each do |post| %>
     <div class="bg-white border border-sky-100 rounded-lg shadow-sm p-4 flex items-start justify-between gap-4">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl font-bold">
-          <%= link_to post.title, post_path(post), class: "text-sky-800 hover:text-sky-600" %>
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <% if post.draft? %>
+            <span class="text-xs bg-amber-100 text-amber-700 rounded-full px-2 py-0.5">下書き</span>
+            <%= link_to post.title.presence || "(無題の下書き)", edit_post_path(post), class: "text-sky-800 hover:text-sky-600" %>
+          <% else %>
+            <%= link_to post.title, post_path(post), class: "text-sky-800 hover:text-sky-600" %>
+          <% end %>
         </h2>
         <p class="text-sm text-slate-400">
           <%= post.user.email %> ・ <%= l(post.created_at, format: :long) %>

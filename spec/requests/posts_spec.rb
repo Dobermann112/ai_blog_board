@@ -40,6 +40,14 @@ RSpec.describe "Posts", type: :request do
       get posts_path(page: 2)
       expect(response.body).to include(post_record.title)
     end
+
+    it "does not include draft posts" do
+      draft = Post.create!(title: "下書き記事", body: nil, user: owner, draft: true)
+
+      get posts_path
+
+      expect(response.body).not_to include(draft.title)
+    end
   end
 
   describe "GET /posts/:id" do
@@ -64,6 +72,24 @@ RSpec.describe "Posts", type: :request do
       get post_path(post_record)
       expect(response.body).not_to include("<img")
     end
+
+    it "allows the owner to view their own draft" do
+      draft = Post.create!(title: "下書き記事", body: nil, user: owner, draft: true)
+
+      sign_in owner
+      get post_path(draft)
+
+      expect(response).to have_http_status(:success)
+    end
+
+    it "blocks other users from viewing a draft" do
+      draft = Post.create!(title: "下書き記事", body: nil, user: owner, draft: true)
+
+      sign_in other_user
+      get post_path(draft)
+
+      expect(response).to redirect_to(root_path)
+    end
   end
 
   describe "GET /posts/new" do
@@ -76,6 +102,15 @@ RSpec.describe "Posts", type: :request do
       sign_in owner
       get new_post_path
       expect(response).to have_http_status(:success)
+    end
+
+    it "shows a link to quote an existing draft" do
+      draft = Post.create!(title: "続きを書く下書き", body: nil, user: owner, draft: true)
+
+      sign_in owner
+      get new_post_path
+
+      expect(response.body).to include(draft.title)
     end
   end
 
@@ -127,6 +162,28 @@ RSpec.describe "Posts", type: :request do
       post posts_path, params: { post: { title: "", body: "" } }, as: :json
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "saves a draft with only a title" do
+      sign_in owner
+
+      expect do
+        post posts_path, params: { post: { title: "タイトルだけの下書き", body: "" }, draft_submit: "下書き保存" }
+      end.to change(Post, :count).by(1)
+
+      created = Post.last
+      expect(created).to be_draft
+      expect(response).to redirect_to(edit_post_path(created))
+    end
+
+    it "does not save a draft when both title and body are blank" do
+      sign_in owner
+
+      expect do
+        post posts_path, params: { post: { title: "", body: "" }, draft_submit: "下書き保存" }
+      end.not_to change(Post, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe "GET /posts/:id/edit" do
@@ -140,6 +197,16 @@ RSpec.describe "Posts", type: :request do
       sign_in other_user
       get edit_post_path(post_record)
       expect(response).to redirect_to(root_path)
+    end
+
+    it "shows a delete button so drafts can be removed without visiting the show page" do
+      draft = Post.create!(title: "下書き", body: nil, user: owner, draft: true)
+
+      sign_in owner
+      get edit_post_path(draft)
+
+      expect(response.body).to include(post_path(draft))
+      expect(response.body).to include("削除")
     end
   end
 
@@ -172,6 +239,27 @@ RSpec.describe "Posts", type: :request do
       sign_in owner
       patch post_path(post_record), params: { post: { title: "" } }, as: :json
       expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "publishes a draft when saved normally with both fields filled" do
+      draft = Post.create!(title: "下書き", body: nil, user: owner, draft: true)
+      sign_in owner
+
+      patch post_path(draft), params: { post: { body: "本文を追加しました" } }
+
+      draft.reload
+      expect(draft).not_to be_draft
+      expect(response).to redirect_to(draft)
+    end
+
+    it "keeps a post as a draft when saved via the draft button" do
+      sign_in owner
+
+      patch post_path(post_record), params: { post: { title: "更新した下書き" }, draft_submit: "下書き保存" }
+
+      post_record.reload
+      expect(post_record).to be_draft
+      expect(response).to redirect_to(edit_post_path(post_record))
     end
   end
 
@@ -207,6 +295,15 @@ RSpec.describe "Posts", type: :request do
       sign_in owner
       get mypage_path
       expect(response.body).to include("自分の投稿")
+    end
+
+    it "includes the user's own drafts" do
+      draft = Post.create!(title: "マイページ表示用下書き", body: nil, user: owner, draft: true)
+
+      sign_in owner
+      get mypage_path
+
+      expect(response.body).to include(draft.title)
     end
   end
 end
