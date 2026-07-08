@@ -61,5 +61,15 @@ RSpec.describe "Favorites", type: :request do
       expect(response.body).to include(post_record.title)
       expect(response.body).not_to include(other_post.title)
     end
+
+    it "does not include a favorited post that has since become a draft" do
+      fan.favorites.create!(post: post_record)
+      post_record.update!(draft: true)
+
+      sign_in fan
+      get favorites_path
+
+      expect(response.body).not_to include(post_record.title)
+    end
   end
 end

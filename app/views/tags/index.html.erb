@@ -5,7 +5,7 @@
 <ul class="flex flex-wrap gap-2">
   <% visible_tags.each do |tag| %>
     <li>
-      <%= link_to "##{tag.name} (#{tag.posts.size})", tag_path(tag),
+      <%= link_to "##{tag.name} (#{tag.posts.published.count})", tag_path(tag),
             class: "bg-white text-sky-700 border border-sky-200 rounded-full px-3 py-1 text-sm hover:bg-sky-50" %>
     </li>
   <% end %>
@@ -17,7 +17,7 @@
     <ul class="flex flex-wrap gap-2 mt-2">
       <% extra_tags.each do |tag| %>
         <li>
-          <%= link_to "##{tag.name} (#{tag.posts.size})", tag_path(tag),
+          <%= link_to "##{tag.name} (#{tag.posts.published.count})", tag_path(tag),
                 class: "bg-white text-sky-700 border border-sky-200 rounded-full px-3 py-1 text-sm hover:bg-sky-50" %>
         </li>
       <% end %>

@@ -44,4 +44,31 @@ RSpec.describe Post, type: :model do
     )
     expect(post.image).to be_attached
   end
+
+  describe "draft" do
+    it "is valid with only a title" do
+      post = Post.new(title: "タイトルのみ", body: nil, user: user, draft: true)
+      expect(post).to be_valid
+    end
+
+    it "is valid with only a body" do
+      post = Post.new(title: nil, body: "本文のみ", user: user, draft: true)
+      expect(post).to be_valid
+    end
+
+    it "is invalid when both title and body are blank" do
+      post = Post.new(title: nil, body: nil, user: user, draft: true)
+      expect(post).not_to be_valid
+    end
+  end
+
+  describe ".published and .drafts" do
+    it "separates posts by draft status" do
+      published_post = Post.create!(title: "公開記事", body: "本文", user: user, draft: false)
+      draft_post = Post.create!(title: "下書き記事", body: nil, user: user, draft: true)
+
+      expect(Post.published).to contain_exactly(published_post)
+      expect(Post.drafts).to contain_exactly(draft_post)
+    end
+  end
 end
