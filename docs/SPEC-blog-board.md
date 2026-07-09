@@ -18,6 +18,7 @@
 | Tag | 記事に付与する分類ラベル（name一意） |
 | PostTag | PostとTagの中間テーブル |
 | Favorite | UserがPostに対して行う「お気に入り」登録の中間テーブル |
+| Follow | UserがUserをフォローする関係を表す中間テーブル（フォローする側=follower、される側=followed） |
 
 ## 3. 機能一覧
 
@@ -29,6 +30,9 @@
 - 記事へのお気に入り登録・解除（ログインユーザーのみ、自分の記事も可）
 - 自分がお気に入り登録した記事の一覧閲覧
 - 自分が投稿した記事の一覧閲覧（マイページ）
+- 投稿者へのフォロー登録・解除（ログインユーザーのみ、自分自身はフォロー不可）
+- 自分がフォローしているユーザーの一覧閲覧
+- 特定ユーザーが投稿した公開記事の一覧閲覧（ユーザー投稿一覧）
 
 ## 4. 言語・フレームワークのバージョン方針
 
@@ -55,6 +59,8 @@ User 1---* Favorite        (Favorite.user_id, dependent: :destroy)
 Post 1---* PostTag         (PostTag.post_id, dependent: :destroy)
 Post 1---* Favorite        (Favorite.post_id, dependent: :destroy)
 Tag  1---* PostTag         (PostTag.tag_id, dependent: :destroy)
+User 1---* Follow          (Follow.follower_id, dependent: :destroy)
+User 1---* Follow          (Follow.followed_id, dependent: :destroy)
 ```
 
 ### モデル別方針
@@ -64,15 +70,18 @@ Tag  1---* PostTag         (PostTag.tag_id, dependent: :destroy)
 - `Tag`: `name`（必須・一意）
 - `PostTag`（中間テーブル）: `belongs_to :post`、`belongs_to :tag`。`tag_id` に `post_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `post_id + tag_id` の複合ユニークインデックスを張る（アプリ層・DB層の二重チェック）
 - `Favorite`（中間テーブル）: `belongs_to :user`、`belongs_to :post`。`post_id` に `user_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `user_id + post_id` の複合ユニークインデックスを張る
+- `Follow`（中間テーブル、自己参照）: `belongs_to :follower, class_name: "User"`、`belongs_to :followed, class_name: "User"`。`followed_id` に `follower_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `follower_id + followed_id` の複合ユニークインデックスを張る。加えて、自分自身をフォローできないようにするカスタムバリデーションを設ける（他の中間テーブルにはない要件）
 
 ### マイグレーション方針
 
 - 外部キーを持つカラムは `t.references ..., foreign_key: true` で定義し、DBレベルでも外部キー制約を効かせる
 - 所有者に紐づくモデルは、所有者側モデルに `dependent: :destroy` をセットで書き、所有者削除時のデータ整合性を担保する
+- 自己参照の中間テーブル（`Follow`の`follower_id`/`followed_id`など）はカラム名の接頭辞がテーブル名と一致しないため、`foreign_key: { to_table: :users }` のように参照先テーブルを明示する
 
 ## 7. ルーティング方針
 
 - 記事に対する単一アクションのリソース（お気に入り）は `resources :posts do resource :favorite, only: [:create, :destroy] end` のようにネストし、URLとコントローラの対応を素直に保つ
+- ユーザーに対する単一アクションのリソース（フォロー）は `resources :users, only: [:show] do resource :follow, only: [:create, :destroy] end` のようにネストする
 - タグ別記事一覧は `resources :tags, only: [:index, :show]`
 - JSON APIは別途 `api/` namespace を切らず、同一コントローラ内で `respond_to` によりHTML/JSONを共存させる
 
@@ -95,6 +104,8 @@ Tag  1---* PostTag         (PostTag.tag_id, dependent: :destroy)
 | タグ別記事一覧 | 特定タグが付与された記事一覧 | 不要 |
 | お気に入り一覧 | 自分がお気に入り登録した記事一覧 | 要ログイン |
 | マイページ（自分の投稿一覧） | 自分が投稿した記事一覧 | 要ログイン |
+| フォロー一覧 | 自分がフォローしているユーザーの一覧 | 要ログイン |
+| ユーザー投稿一覧 | 特定ユーザーが公開した記事一覧 | 不要（フォロー操作のみ要ログイン） |
 | ユーザー登録 / ログイン / ログアウト | devise標準画面 | - |
 
 ## 10. テスト方針
@@ -130,9 +141,11 @@ Tag  1---* PostTag         (PostTag.tag_id, dependent: :destroy)
 - [ ] `.ruby-version` / `.tool-versions` に Ruby 4.0.1、`Gemfile` に `rails "~> 8.1.2"` が明記され、`Gemfile.lock` がコミットされている
 - [ ] devise導入済みで、`require_login!` / `authorize_owner!` による認可が `PostsController` に実装され、HTML/JSON双方に対応している
 - [ ] `PostTag` / `Favorite` にアプリ層uniquenessバリデーション＋DB複合ユニークインデックスの二重チェックが実装されている
+- [ ] `Follow` にアプリ層uniquenessバリデーション＋DB複合ユニークインデックスの二重チェックに加え、自己フォロー禁止バリデーションが実装されている
 - [ ] 所有者に紐づくモデルに `dependent: :destroy` が設定されている
 - [ ] マイグレーションが `foreign_key: true` を徹底している
 - [ ] `resources :posts do resource :favorite ... end` 形式のネストルーティングが実装されている
+- [ ] `resources :users do resource :follow ... end` 形式のネストルーティングと、フォロー一覧・ユーザー投稿一覧画面が実装されている
 - [ ] レイアウトにヘッダー/サイドバーがあり、一覧パーシャルが複数画面で再利用されている
 - [ ] お気に入り登録・削除が `button_to` のフォーム送信のみで完結している
 - [ ] RSpec + Capybara + SimpleCov（閾値70%）が設定され、CIで強制されている
