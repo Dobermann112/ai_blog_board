@@ -1,0 +1,18 @@
+<div class="bg-white border border-sky-100 rounded-lg shadow-sm p-4 flex flex-col gap-3">
+  <%= form_with model: [ post, comment ], class: "flex flex-col gap-3" do |form| %>
+    <% if comment.errors.any? %>
+      <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-md px-3 py-2 text-sm">
+        <ul>
+          <% comment.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form.text_area :body, rows: local_assigns.fetch(:rows, 4), placeholder: "コメントを入力",
+          class: "border border-sky-200 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    <%= form.submit comment.new_record? ? "コメントする" : "更新する",
+          class: "self-start bg-sky-500 text-white rounded-md px-4 py-2 hover:bg-sky-600 transition cursor-pointer" %>
+  <% end %>
+</div>
