@@ -37,4 +37,18 @@
     <%= link_to "← 記事一覧に戻る", posts_path, class: "text-sky-600 hover:text-sky-800 text-sm" %>
     <p class="text-sm text-slate-400"><%= l(@post.created_at, format: :long) %></p>
   </div>
+
+  <section id="comments" class="pt-4 border-t border-sky-100 flex flex-col gap-4">
+    <h2 class="text-lg font-bold text-sky-800">コメント（<%= @post.comments.count %>）</h2>
+
+    <% if user_signed_in? %>
+      <%= render "comments/form", post: @post, comment: @comment || @post.comments.build %>
+    <% else %>
+      <p class="text-sm text-slate-400">
+        コメントするには<%= link_to "ログイン", new_user_session_path %>してください
+      </p>
+    <% end %>
+
+    <%= render "comments/list", post: @post %>
+  </section>
 </div>

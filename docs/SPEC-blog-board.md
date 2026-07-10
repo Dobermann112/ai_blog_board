@@ -19,6 +19,7 @@
 | PostTag | PostとTagの中間テーブル |
 | Favorite | UserがPostに対して行う「お気に入り」登録の中間テーブル |
 | Follow | UserがUserをフォローする関係を表す中間テーブル（フォローする側=follower、される側=followed） |
+| Comment | UserがPostに対して行う読者コメント（body、投稿者、対象記事） |
 
 ## 3. 機能一覧
 
@@ -33,6 +34,8 @@
 - 投稿者へのフォロー登録・解除（ログインユーザーのみ、自分自身はフォロー不可）
 - 自分がフォローしているユーザーの一覧閲覧
 - 特定ユーザーが投稿した公開記事の一覧閲覧（ユーザー投稿一覧）
+- 記事へのコメント投稿・編集・削除（コメント投稿者本人のみ編集・削除可）
+- 記事詳細ページでのコメント閲覧（ログイン不要）
 
 ## 4. 言語・フレームワークのバージョン方針
 
@@ -61,6 +64,8 @@ Post 1---* Favorite        (Favorite.post_id, dependent: :destroy)
 Tag  1---* PostTag         (PostTag.tag_id, dependent: :destroy)
 User 1---* Follow          (Follow.follower_id, dependent: :destroy)
 User 1---* Follow          (Follow.followed_id, dependent: :destroy)
+User 1---* Comment         (Comment.user_id, dependent: :destroy)
+Post 1---* Comment         (Comment.post_id, dependent: :destroy)
 ```
 
 ### モデル別方針
@@ -71,6 +76,7 @@ User 1---* Follow          (Follow.followed_id, dependent: :destroy)
 - `PostTag`（中間テーブル）: `belongs_to :post`、`belongs_to :tag`。`tag_id` に `post_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `post_id + tag_id` の複合ユニークインデックスを張る（アプリ層・DB層の二重チェック）
 - `Favorite`（中間テーブル）: `belongs_to :user`、`belongs_to :post`。`post_id` に `user_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `user_id + post_id` の複合ユニークインデックスを張る
 - `Follow`（中間テーブル、自己参照）: `belongs_to :follower, class_name: "User"`、`belongs_to :followed, class_name: "User"`。`followed_id` に `follower_id` スコープの `uniqueness` バリデーションを設定し、DB側でも `follower_id + followed_id` の複合ユニークインデックスを張る。加えて、自分自身をフォローできないようにするカスタムバリデーションを設ける（他の中間テーブルにはない要件）
+- `Comment`: `body`（必須）, `user_id`, `post_id`。`belongs_to :user`、`belongs_to :post`。同一ユーザーが同一記事に複数コメント可能なため uniqueness バリデーションは設けない
 
 ### マイグレーション方針
 
@@ -83,6 +89,7 @@ User 1---* Follow          (Follow.followed_id, dependent: :destroy)
 - 記事に対する単一アクションのリソース（お気に入り）は `resources :posts do resource :favorite, only: [:create, :destroy] end` のようにネストし、URLとコントローラの対応を素直に保つ
 - ユーザーに対する単一アクションのリソース（フォロー）は `resources :users, only: [:show] do resource :follow, only: [:create, :destroy] end` のようにネストする
 - タグ別記事一覧は `resources :tags, only: [:index, :show]`
+- 記事に対する複数存在しうる子リソース（コメント）は `resources :posts do resources :comments, only: [:create, :edit, :update, :destroy] end` のようにネストする（お気に入りの単数形`resource`とは異なり、複数存在するため複数形`resources`を使う）
 - JSON APIは別途 `api/` namespace を切らず、同一コントローラ内で `respond_to` によりHTML/JSONを共存させる
 
 ## 8. UI/ビュー構成方針
@@ -97,7 +104,7 @@ User 1---* Follow          (Follow.followed_id, dependent: :destroy)
 | 画面 | 概要 | 認証要否 |
 |---|---|---|
 | 記事一覧（トップ） | 全記事を新着順に表示 | 不要 |
-| 記事詳細 | 本文・タグ・お気に入り状況を表示 | 不要（お気に入り操作のみ要ログイン） |
+| 記事詳細 | 本文・タグ・お気に入り状況・コメント一覧を表示 | 不要（お気に入り操作・コメント投稿/編集/削除のみ要ログイン） |
 | 記事新規作成 | タイトル・本文・タグを入力して投稿 | 要ログイン |
 | 記事編集 | 投稿者本人のみ編集可 | 要ログイン＋所有者 |
 | 記事削除 | 投稿者本人のみ削除可 | 要ログイン＋所有者 |
@@ -152,10 +159,12 @@ User 1---* Follow          (Follow.followed_id, dependent: :destroy)
 - [ ] rubocop-rails-omakase・lefthook・brakeman・bundler-auditが導入されている
 - [ ] GitHub Actionsで scan_ruby / lint / test の3ジョブが構成され、dependabotが有効化されている
 - [ ] docker-compose（Postgresのみ）・Dockerfile/kamal・Procfile.dev・.env.example が用意されている
+- [ ] `Comment` に `dependent: :destroy` を伴う `User`/`Post` との関連が実装されている
+- [ ] `resources :posts do resources :comments ... end` 形式のネストルーティングが実装され、コメントの投稿・編集・削除がコメント投稿者本人のみに制限されている
+- [ ] 記事詳細ページでコメントが5件以上ある場合、`<details>/<summary>` によるプルダウン風UIで表示される
 
 ## 15. スコープ外（将来検討事項）
 
-- コメント機能（記事への読者コメント）
 - 記事の下書き/公開ステータス管理
 - 管理者による記事・ユーザー管理画面
 - 検索機能（全文検索等）

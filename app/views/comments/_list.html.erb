@@ -1,0 +1,13 @@
+<% comments = post.comments.includes(:user).order(:created_at) %>
+<% if comments.size >= 5 %>
+  <details class="flex flex-col gap-3">
+    <summary class="cursor-pointer text-sm font-bold text-sky-700"><%= comments.size %>件のコメントを表示</summary>
+    <div class="flex flex-col gap-3 mt-2">
+      <%= render partial: "comments/comment", collection: comments, as: :comment %>
+    </div>
+  </details>
+<% else %>
+  <div class="flex flex-col gap-3">
+    <%= render partial: "comments/comment", collection: comments, as: :comment %>
+  </div>
+<% end %>

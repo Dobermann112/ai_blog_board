@@ -1,0 +1,16 @@
+<div id="<%= dom_id(comment) %>" class="border border-sky-100 rounded-md p-3 flex flex-col gap-1">
+  <div class="flex justify-between items-center">
+    <p class="text-sm font-bold text-sky-700"><%= comment.user.email %></p>
+    <p class="text-xs text-slate-400"><%= l(comment.created_at, format: :long) %></p>
+  </div>
+  <p class="whitespace-pre-wrap text-sm"><%= comment.body %></p>
+  <% if user_signed_in? && comment.user == current_user %>
+    <div class="flex items-center gap-2">
+      <%= link_to "編集", edit_post_comment_path(comment.post, comment),
+            class: "text-xs bg-sky-100 text-sky-700 rounded-md px-2 py-1 hover:bg-sky-200 transition" %>
+      <%= button_to "削除", post_comment_path(comment.post, comment), method: :delete,
+            data: { turbo_confirm: "コメントを削除しますか？" },
+            class: "text-xs bg-rose-50 text-rose-600 border border-rose-200 rounded-md px-2 py-1 hover:bg-rose-100 transition" %>
+    </div>
+  <% end %>
+</div>
